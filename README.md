@@ -1,6 +1,6 @@
 <h1>Project description</h1>
 
-![logo](img/logo.png)
+![logo](img/logo-2.png)
 
 This utility will show the location of the server.  
 And little information.
