@@ -5,7 +5,7 @@
 This utility will show the location of the server.  
 And little information.
 
-###Usage: python3 HMap.py [-h][-s][-b][-f][-l]
+<h3>Usage: python3 HMap.py [-h][-s][-b][-f][-l]</h3>
 
 >-h, --help : tutorial  
 -s, --site : domain name or ip address  
@@ -13,7 +13,7 @@ And little information.
 -f, --file : save response to file.json  
 -l, --language : language google maps, default uk  
 
-###Example:
+<h3>Example:</h3>
 
     python3 HMap.py -s google.com -b 1 -l en
     python3 HMap.py --site google.com --browser 0 --file rez.json
