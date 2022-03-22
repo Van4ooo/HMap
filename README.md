@@ -9,11 +9,10 @@ And little information.
 
 >-h, --help : tutorial  
 -s, --site : domain name or ip address  
--b, --browser : default 1 open browser, 0 don't open  
--f, --file : save response to file.json  
--l, --language : language google maps, default uk  
+-b : Google Maps settings: status[1/0] language[uk, en ...]  
+-f, --file : save response to json file
 
 <h3>Example:</h3>
 
-    python3 HMap.py -s google.com -b 1 -l en
-    python3 HMap.py --site google.com --browser 0 --file rez.json
+    python3 HMap.py -s google.com -b 1 en
+    python3 HMap.py --site google.com -b 0 nn --file rez.json
