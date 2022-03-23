@@ -14,7 +14,7 @@ Install [poetry]("https://python-poetry.org/docs/") from the official site.
     cd hmap
     poetry install
 
-<h3>Usage: python3 HMap.py [-h][-s][-b][-f]</h3>
+<h2>Usage: python3 HMap.py [-h][-s][-b][-f]</h2>
 
 -h, --help : Show this help message and exit  
 -s, --site : Domain server to search  
