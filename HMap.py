@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import argparse
+import sys
 import requests
 from pyfiglet import Figlet
 import webbrowser
@@ -9,27 +9,26 @@ import json
 
 
 class HostMap:
-    def __init__(self, args):
-        self.args = args
-        self.ip = self.get_ip_by_domain()
+    def __init__(self):
+        caption_text()
+        self.args, status = parse_args()
 
-        if self.ip:
-            self.response_date = self.get_info()
-            if self.response_date:
-                self.href = self.google_map_generation_href()
-                print(f"[+] link on google map: {self.href}", end="\n\n")
-            else:
-                print('[!] Please check your connection!')
+        if self.args.get(('-h', '--help')) or not status:
+            tutorial()
         else:
+            if self.args.get(("-s", "--site")):
+                self.ip = self.get_ip_by_domain()
+                self.get_info()
+            else:
+                print("[!] address not found")
+
+    def get_ip_by_domain(self):
+        try:
+            return socket.gethostbyname(self.args.get(("-s", "--site")))
+        except socket.gaierror:
             print("[!] Ops, please check the address")
 
-    def get_ip_by_domain(self) -> str | None:
-        try:
-            return socket.gethostbyname(self.args.site)
-        except socket.gaierror:
-            return None
-
-    def get_info(self) -> bool | dict:
+    def get_info(self):
         try:
             response = requests.get(url=f'http://ip-api.com/json/{self.ip}').json()
 
@@ -45,78 +44,60 @@ class HostMap:
                 '[* Lon]': response.get('lon'),
             }
 
-            print(*[f'{key}  << {values} >>' for key, values in response_date.items()], sep="\n", end="\n\n")
+            print(*[f'{key}  << {values} >>' for key, values in response_date.items()], sep="\n")
 
-            """self.google_map([response_date.get("[* Lat]"), response_date.get("[* Lon]")])
-            self.save_response(response_date)"""
-            return response_date
+            self.google_map([response_date.get("[* Lat]"), response_date.get("[* Lon]")])
+            self.save_response(response_date)
 
         except requests.exceptions.ConnectionError:
-            return False
+            print('[!] Please check your connection!')
 
-    def google_map_generation_href(self) -> str:
-        href = f"https://www.google.com.ua/maps/@{self.response_date.get('[* Lat]')}," + \
-              f"{self.response_date.get('[* Lon]')},15z?hl={self.args.settings[1]}"
+    def google_map(self, location: list):
+        if int(self.args.get(("-b", "--browser"))):
+            webbrowser.open(f"https://www.google.com.ua/maps/@{location[0]}," +
+                            f"{location[1]},15z?hl={self.args.get(('-l', '--language'))}")
 
-        return href
+            print("\n[+] Browser opened")
 
-    def google_maps_open(self) -> None:
-        webbrowser.open(self.href)
+    def save_response(self, date: dict):
+        if self.args.get(("-f", "--file")):
+            with open(self.args.get(("-f", "--file")), mode="w") as write_file:
+                json.dump(date, write_file, indent=4)
 
-    def save_response(self) -> None:
-        with open(self.args.file, mode="w") as write_file:
-            json.dump(self.response_date, write_file, indent=4)
+            print("\n[+] file saved")
 
 
-class ParseArgs:
-    parser = argparse.ArgumentParser(
-        epilog="This utility will show the location of the server. "
-               "And little information.")
+def parse_args() -> list:
+    command_dict = {
+        ("-s", "--site"): None,
+        ("-h", "--help"): False,
+        ("-b", "--browser"): "1",
+        ("-l", "--language"): "uk",
+        ("-f", "--file"): None
+    }
+    status = False
+    mass = sys.argv[1:]
 
-    def __init__(self):
-        caption_tx = Figlet(font="doom")
-        print(caption_tx.renderText("Host  Map"))
+    for i in range(0, len(mass), 2):
+        for k in command_dict:
+            if mass[i] in k:
+                command_dict[k] = True if mass[i] in ("-h", "--help") else mass[i + 1]
+                status = True
 
-        self.parser.add_argument(
-            '-s',
-            '--site',
-            dest="site",
-            help='domain server to search',
-        )
+    return [command_dict, status]
 
-        self.parser.add_argument(
-            '-b',
-            nargs=2,
-            dest="settings",
-            default=[1, 'uk'],
-            help='google maps settings: status[1/0] language[uk, en ...]',
-        )
 
-        self.parser.add_argument(
-            '-f',
-            '--file',
-            dest="file",
-            default='',
-            help='save response to json file',
-        )
+def tutorial():
+    with open("date.json") as f:
+        date = json.load(f)['help']
 
-    def tutorial(self):
-        self.parser.print_help()
+    print(*date, sep="\n")
+
+
+def caption_text():
+    caption_tx = Figlet(font="doom")
+    print(caption_tx.renderText("Host  Map"))
 
 
 if __name__ == '__main__':
-    args_m = ParseArgs()
-    ar = args_m.parser.parse_args()
-
-    if ar.site:
-        hmap = HostMap(args=ar)
-
-        if int(ar.settings[0]):
-            hmap.google_maps_open()
-            print("[+] Browser opened")
-
-        if ar.file:
-            hmap.save_response()
-            print(f"[+] Response saved to {ar.file}")
-    else:
-        args_m.tutorial()
+    server = HostMap()
