@@ -14,6 +14,6 @@ Install [poetry]("https://python-poetry.org/docs/") from the official site.
     cd hmap
     poetry install
 
-<h2>Usage: poetry python3 HMap.py
+<h2>Usage: poetry run python3 HMap.py
     
     Інструкція Буде)
