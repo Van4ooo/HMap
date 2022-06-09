@@ -7,7 +7,7 @@ And little information.
 
 <h2>Installing</h3>
     
-    git clone https://github.com/xacer2005/HMap.git
+    git clone https://github.com/Van4ooo/HMap.git
 
 Install [poetry]("https://python-poetry.org/docs/") from the official site.
     
